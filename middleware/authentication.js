@@ -17,17 +17,21 @@ function auth(req, res, next) {
         const payload = jwt.verify(token, 'SeCrEtJsOnWeBtOkEn');
 
         // Check database for either a manager or a user corresponding to the provided login information
+        // Check for a user first
         database.query(`SELECT * FROM user WHERE ID = ${payload.ID}`, (error, result) => {
             if (error) console.log(error);
 
+            // If the query found a user, then advance
             if (result[0]) return next();
 
+            // If the query found no user than look for a manager
             database.query(`SELECT * FROM manager WHERE ID = ${payload.ID}`, (error, result) => {
                 if (error) console.log(error);
 
+                // If query found no manager
                 if (!result[0]) return res.status(401).send('Access denied: incorrect credentials');
 
-                // Advance to the endpoint
+                //If query found a manager, then advance
                 next();
 
             });

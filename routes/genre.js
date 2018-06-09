@@ -1,5 +1,6 @@
 const express = require('express');
 const auth = require('../middleware/authentication');
+const authManager = require('../middleware/authenticationManager');
 const database = require('../database');
 const { validate } = require('../models/genre');
 
@@ -20,7 +21,7 @@ router.get('/', auth, (req, res) => {
 });
 
 // Endpoint to post a new genre
-router.post('/', auth, (req, res) => {
+router.post('/', authManager, (req, res) => {
 
     // Validate client input
     const { error } = validate(req.body);
@@ -47,7 +48,7 @@ router.post('/', auth, (req, res) => {
 });
 
 // Endpoint to put a new genre
-router.put('/:ID', auth, (req, res) => {
+router.put('/:ID', authManager, (req, res) => {
 
     // Validate client input
     const { error } = validate(req.body);
@@ -69,7 +70,7 @@ router.put('/:ID', auth, (req, res) => {
 });
 
 // Endpoint to delete a genre
-router.delete('/:ID', auth, (req, res) => {
+router.delete('/:ID', authManager, (req, res) => {
 
     // Check if genre with given ID exists
     database.query(`SELECT * FROM genre WHERE ID = ${req.params.ID}`, (error, result) => {
