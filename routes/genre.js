@@ -1,5 +1,5 @@
 const express = require('express');
-const auth = require('../authentication');
+const auth = require('../middleware/authentication');
 const database = require('../database');
 const { validate } = require('../models/genre');
 

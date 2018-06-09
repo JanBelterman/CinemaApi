@@ -16,11 +16,7 @@ router.post('/login', (req, res) => {
 
         if (req.body.password !== result[0].password) return res.status(401).send('Access denied. Password is incorrect');
 
-        const user = {
-            ID: result[0].ID
-        };
-
-        const token = jwt.sign(user, 'SeCrEtJsOnWeBtOkEn');
+        const token = jwt.sign({ ID: result[0].ID}, 'SeCrEtJsOnWeBtOkEn');
 
         res.status(200).send(token);
 
@@ -46,11 +42,7 @@ router.post('/register', (req, res) => {
 
             database.query(`SELECT * FROM user WHERE ID = '${result.insertId}'`, (error, result) => {
 
-                const user = {
-                    ID: result[0].ID
-                };
-
-                const token = jwt.sign(user, 'SeCrEtJsOnWeBtOkEn');
+                const token = jwt.sign({ ID: result[0].ID}, 'SeCrEtJsOnWeBtOkEn');
 
                 res.status(200).send(token);
 
