@@ -1,13 +1,13 @@
 const joi = require('joi');
 
-function validate(user) {
+function validate(login) {
 
     const schema = {
         username: joi.string().required(),
         password: joi.string().required()
     };
 
-    return joi.validate(user, schema);
+    return joi.validate(login, schema);
 
 }
 
