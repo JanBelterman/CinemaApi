@@ -46,4 +46,26 @@ router.post('/', auth, (req, res) => {
 
 });
 
+// Route to put a new genre
+router.put('/:id', auth, (req, res) => {
+
+    // Validate client input
+    const { error } = validate(req.body);
+    if (error) return res.status(412).send(error.details[0].message);
+
+    // Update genre in database
+    let genre = {
+        ID: req.params.id,
+        title: req.body.title
+    }
+    let query = database.query(`UPDATE genre SET title = '${genre.title}' WHERE ID = ${genre.ID}`, (error, result) => {
+        if (error) console.log(error);
+
+        // Return response containing the updated genre
+        res.status(200).send(genre);
+
+    });
+
+});
+
 module.exports = router;
