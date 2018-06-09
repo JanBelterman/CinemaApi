@@ -71,15 +71,17 @@ router.put('/:ID', auth, (req, res) => {
 // Endpoint to delete a genre
 router.delete('/:ID', auth, (req, res) => {
 
-    // Check if genre exists
+    // Check if genre with given ID exists
     database.query(`SELECT * FROM genre WHERE ID = ${req.params.ID}`, (error, result) => {
         if (error) console.log(error);
 
         if (!result[0]) return res.status(404).send(`Request terminated: no genre found with ID: ${req.params.ID}`);
 
+        // Delete genre
         database.query(`DELETE FROM genre WHERE ID = ${req.params.ID}`, (error) => {
             if (error) console.log(error);
 
+            // Return response containing the deleted genre
             res.status(200).send(result[0]);
 
         });
