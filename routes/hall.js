@@ -94,8 +94,8 @@ router.get('/:ID', auth, (req, res) => {
 
         // Get the hall
         let hall = {
-            ID: result[i].ID,
-            Nr: result[i].Nr,
+            ID: result[0].ID,
+            Nr: result[0].Nr,
             seatRows: []
         }
         // Query all seat rows within a certain hall
@@ -103,14 +103,14 @@ router.get('/:ID', auth, (req, res) => {
             if (error) console.log(error);
 
             // For all seat rows
-            let j = 0;
-            while (j < result.length) {
+            let i = 0;
+            while (i < result.length) {
 
                 // Get that seat row
                 let seatRow = {
-                    ID: result[j].ID,
-                    hallID: result[j].hallID,
-                    Nr: result[j].Nr,
+                    ID: result[i].ID,
+                    hallID: result[i].hallID,
+                    Nr: result[i].Nr,
                     seats: []
                 }
                 // Query all seats within that seat row
@@ -118,19 +118,19 @@ router.get('/:ID', auth, (req, res) => {
                     if (error) console.log(error);
 
                     // For all seats
-                    let k = 0;
-                    while (k < result.length) {
+                    let j = 0;
+                    while (j < result.length) {
 
                         // Get that seat
                         let seat = {
-                            ID: result[k].ID,
-                            seatRowID: result[k].seatRowID,
-                            seatNr: result[k].seatNr
+                            ID: result[j].ID,
+                            seatRowID: result[j].seatRowID,
+                            seatNr: result[j].seatNr
                         }
 
                         // Add that seat to the seats of the seat row
                         seatRow.push(seat);
-                        k++;
+                        i++;
 
                     }
 
@@ -138,13 +138,16 @@ router.get('/:ID', auth, (req, res) => {
             
                 // Add that seat row to the hall
                 hall.seatRows.push(seatRow);
-                j++;
+                k++;
 
             }
 
         });
 
     });
+
+    // Return response containing the hall
+    return res.status(200).send(hall);
 
 });
 
