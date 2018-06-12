@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 
 let database = mysql.createConnection({
-    host: 'localhost',
-    user: 'cinema_app_user',
-    password: 'IyIdBqs6ACmZhjVW',
-    database: 'Cinema',
+    host: process.env.DATABASE_HOST || 'localhost',
+    user: process.env.DATABASE_USER || 'cinema_app_user',
+    password: process.env.DATABASE_PASSWORD || 'IyIdBqs6ACmZhjVW',
+    database: process.env.DATABASE_NAME || 'Cinema',
     insecureAuth: true
 });
 
