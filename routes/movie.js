@@ -17,4 +17,17 @@ router.get('/', auth, (req, res) => {
 
 });
 
+router.get('/:ID', auth, (req, res) => {
+
+    database.query(`SELECT * FROM movie WHERE ID = ${req.params.ID}`, (error, result) => {
+        if (error) console.log(error);
+
+        if (!result[0]) return res.status(404).send(`Request terminated: no movie found with ID: ${req.params.ID}`);
+
+        res.status(200).send(result);
+
+    });
+
+});
+
 module.exports = router;
