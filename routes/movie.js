@@ -30,4 +30,29 @@ router.get('/:ID', auth, (req, res) => {
 
 });
 
+router.post('/', authManager, (req, res) => {
+
+    const { error } = validate(req.body);
+    if (error) return res.status(412).send(error.details[0].message);
+
+    database.query(`INSERT INTO movie SET ?`, req.body, (error, result) => {
+        if (error) console.log(error);
+
+        res.status(200).send({
+            ID: result.insertId,
+            title: req.body.title,
+            description: req.body.description,
+            runtime: req.body.runtime,
+            genreID: req.body.genreID,
+            director: req.body.director,
+            production: req.body.production,
+            releaseDate: req.body.releaseDate,
+            rating: req.body.rating,
+            imageURL: req.body.imageURL
+        })
+
+    });
+
+});
+
 module.exports = router;

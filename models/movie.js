@@ -2,8 +2,7 @@ const joi = require('joi');
 
 function validate(movie) {
 
-    const movie = {
-        ID: joi.number().integer().required(),
+    const schema = {
         title: joi.string().required(),
         description: joi.string().required(),
         runtime: joi.number().integer().required(),
@@ -11,7 +10,7 @@ function validate(movie) {
         director: joi.string().required(),
         production: joi.string().required(),
         releaseDate: joi.string().required(),
-        rating: joi.number().integer(),
+        rating: joi.number().required(),
         imageURL: joi.string().required()
     };
 
