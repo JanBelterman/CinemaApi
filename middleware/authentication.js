@@ -22,14 +22,14 @@ function auth(req, res, next) {
             if (error) console.log(error);
 
             // If the query found a user, then advance
-            if (result[0]) return next();
+            if (result.length >= 1) return next();
 
             // If the query found no user than look for a manager
             database.query(`SELECT * FROM manager WHERE ID = ${payload.ID}`, (error, result) => {
                 if (error) console.log(error);
 
                 // If query found no manager
-                if (!result[0]) return res.status(401).send('Access denied: incorrect credentials');
+                if (result.length <= 0) return res.status(401).send('Access denied: incorrect credentials');
 
                 //If query found a manager, then advance
                 next();

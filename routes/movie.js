@@ -55,4 +55,44 @@ router.post('/', authManager, (req, res) => {
 
 });
 
+router.put('/:ID', authManager, (req, res) => {
+
+    const { error } = validate(req.body);
+    if (error) return res.status(412).send(error.details[0].message);
+
+    let movie = {
+        ID: req.params.ID,
+        title: req.body.title,
+        description: req.body.description,
+        runtime: req.body.runtime,
+        genreID: req.body.genreID,
+        director: req.body.director,
+        production: req.body.production,
+        releaseDate: req.body.releaseDate,
+        rating: req.body.rating,
+        imageURL: req.body.imageURL
+    }
+
+    let sql =
+        `UPDATE movie
+        SET title = '${movie.title}',
+        description = '${movie.description}',
+        runtime = ${movie.runtime},
+        genreID = ${movie.genreID},
+        director = '${movie.director}',
+        production = '${movie.production}',
+        releaseDate = '${movie.releaseDate}',
+        rating = ${movie.rating},
+        imageURL = '${movie.imageURL}'
+        WHERE ID = ${movie.ID}`;
+
+    database.query(sql, req.body, (error, result) => {
+        if (error) console.log(error);
+
+        res.status(200).send(movie);
+
+    });
+
+});
+
 module.exports = router;
