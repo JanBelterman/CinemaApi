@@ -59,7 +59,7 @@ router.put('/:ID', authManager, (req, res) => {
         ID: req.params.ID,
         title: req.body.title
     }
-    let query = database.query(`UPDATE genre SET title = '${genre.title}' WHERE ID = ${genre.ID}`, (error, result) => {
+    database.query(`UPDATE genre SET title = '${genre.title}' WHERE ID = ${genre.ID}`, (error, result) => {
         if (error) console.log(error);
 
         // Return response containing the updated genre

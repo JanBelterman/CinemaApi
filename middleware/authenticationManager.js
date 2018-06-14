@@ -21,7 +21,7 @@ function auth(req, res, next) {
             if (error) console.log(error);
 
             // If query found no manager
-            if (!result[0]) return res.status(401).send('Access denied: incorrect credentials');
+            if (result.length <= 0) return res.status(401).send('Access denied: incorrect credentials');
 
             //If query found a manager, then advance
             next();
