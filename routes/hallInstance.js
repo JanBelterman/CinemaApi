@@ -11,14 +11,14 @@ router.get('/:ID', auth, async (req, res) => {
         
         return new Promise((resolve, reject) => {
 
-            // Query the all halls for a hall with the correct ID
+            // Query the all hall instances for a hall instance with the correct ID
             database.query(`SELECT * FROM hallInstance WHERE ID = ${hallInstance.ID}`, (error, result) => {
                 if (error) console.log(error);
 
-                // Check if there is a hall found
+                // Check if there is a hall instance found
                 if (!result[0]) return res.status(412).send(`Request terminated: no hallInstance found with ID: ${hallInstance.ID}`);
 
-                // Get the hall
+                // Get the hall instance
                 hallInstance = {
                 ID: result[0].ID,
                 hallID: result[0].hallID,
@@ -33,21 +33,22 @@ router.get('/:ID', auth, async (req, res) => {
 
     }
 
-    function getSeatRows(hallInstance) {
+    function getSeatRowInstances(hallInstance) {
         
         return new Promise((resolve, reject) => {
 
-            // Query all seat rows within a certain hall
+            // Query all seat row instances within a certain hall instance
             database.query(`SELECT * FROM seatRowInstance WHERE hallInstanceID = ${hallInstance.ID}`, (error, result) => {
                 if (error) console.log(error);
 
+                // List with seat row instances
                 let seatRowInstances = [];
 
-                // For all seat rows
+                // For all seat row instances
                 let i = 0;
                 while (i < result.length) {
 
-                    // Get that seat row
+                    // Get that seat row instance
                     let seatRowInstance = {
                         ID: result[i].ID,
                         hallInstanceID: result[i].hallInstanceID,
@@ -55,12 +56,13 @@ router.get('/:ID', auth, async (req, res) => {
                         seatInstances: []
                     }
 
-                    // Add that seat row to the hall
+                    // Add that seat row instance to the list
                     seatRowInstances.push(seatRowInstance);
                     i++;
 
                 }
 
+                // Return the list with seat row instances
                 resolve(seatRowInstances);
 
             });
@@ -69,19 +71,20 @@ router.get('/:ID', auth, async (req, res) => {
 
     }
 
-    function getSeats(seatRowInstance) { 
+    function getSeatInstances(seatRowInstance) { 
         
         return new Promise((resolve, reject) => {
 
-            // Query all seats within that seat row
+            // Query all seat instances within this seat row instance
             database.query(`SELECT * FROM seatInstance WHERE seatRowInstanceID = ${seatRowInstance.ID}`, (error, result) => {
                 if (error) console.log(error);
 
+                // The list with seat instances
                 let seatInstances = [];
 
-                // For all seats
-                let j = 0;
-                while (j < result.length) {
+                // For all found seats instances
+                let i = 0;
+                while (i < result.length) {
 
                     // Get that seat
                     let seatInstance = {
@@ -91,12 +94,13 @@ router.get('/:ID', auth, async (req, res) => {
                     status: result[j].status
                     }
 
-                    // Add that seat to the seats of the seat row
+                    // Add that seat instance to the list
                     seats.push(seatInstance);
-                    j++;
+                    i++;
 
                 }
 
+                // Return the seat instances
                 resolve(seatInstances);
 
             });
@@ -105,21 +109,25 @@ router.get('/:ID', auth, async (req, res) => {
 
     }
 
+    // Create the hall instance
     let hallInstance = {
         ID: req.params.ID,
         hallID: 0,
         seatRowInstances: []
     }
 
-    hallInstance = await getHall(hallInstance);
+    // Get hall instance
+    hallInstance = await getHallInstance(hallInstance);
 
-    let seatRowInstances = await getSeatRows(hallInstance);
-    hallInstance.seatRowInstances = seatRowInstances
+    // Get the seat row instances
+    hallInstance.seatRowInstances = await getSeatRowInstances(hallInstance);
 
+    // Get the seat instances for every seat row instance of the hall instance
     let counter = 0;
     while (counter < hallInstance.seatRowInstances.length) {
 
-        hallInstance.seatRowInstances[counter].seatInstances = await getSeats(hallInstance.seatRowInstances[counter]);
+        // Get the seat instances and assign them to this seat row instance
+        hallInstance.seatRowInstances[counter].seatInstances = await getSeatInstances(hallInstance.seatRowInstances[counter]);
 
         counter++;
 
@@ -128,6 +136,90 @@ router.get('/:ID', auth, async (req, res) => {
     // Return response containing the hall
     return res.status(200).send(hallInstance);
 
+});
+
+router.post('/', authManager, async (req, res) => {
+
+    function insertHallInstance(hallInstance) {
+
+        return new Promise((resolve, reject) => {
+
+            database.query(`INSERT INTO hallInstance (hallID) VALUES ('${hallInstance.hallID}')`, (error, result) => {
+                if (error) console.log(error);
+        
+                resolve(result.insertId);
+
+            });
+
+        });
+
+    }
+
+    function insertSeatRowInstance(seatRowInstance, hallInstanceID) {
+
+        return new Promise((resolve, reject) => {
+
+            database.query(`INSERT INTO seatRowInstance (hallInstanceID, seatRowID) VALUES (${hallInstanceID}, '${seatRowInstance.seatRowID}')`, (error, result) => {
+                if (error) console.log(error);
+                
+                resolve(result.insertId);
+
+            });
+
+        });
+
+    }
+
+    function insertSeatInstances(seatRowInstance, seatRowInstanceID) {
+
+        return new Promise((resolve, reject) => {
+
+            console.log("Adding seat instances of seat row: \n", seatRowInstance);
+
+            // Add all seat instances to the database
+            let i = 0;
+            while (i < seatRowInstance.seatInstances.length) {
+
+                // Add a seat instance to the database
+                database.query(`INSERT INTO seatInstance (seatRowInstanceID, seatID, status) VALUES (${seatRowInstanceID}, '${seatRowInstance.seatInstances[i].seatID}', '${seatRowInstance.seatInstances[i].status}')`, (error, result) => {
+                    if (error) console.log(error);
+
+                });
+
+                i++;
+
+            }
+
+            // Return
+            resolve();
+
+        });
+
+    }
+
+    // Get the client hall instance
+    let hallInstance = req.body;
+
+    // Add the hall instance to the hall instance table and get the generated ID
+    hallInstance.ID = await insertHallInstance(hallInstance);
+
+    // For all seat row instances
+    let counter = 0;
+    while (counter < hallInstance.seatRowInstances.length) {
+
+        // Add the seat row instance to the seat row instance table and get the generated ID
+        seatRowInstanceID = await insertSeatRowInstance(hallInstance.seatRowInstances[counter], hallInstance.ID);
+
+        // Add all of the seat instances to the seat instance table
+        await insertSeatInstances(hallInstance.seatRowInstances[counter], seatRowInstanceID);
+
+        // Proceed to the next seat row instance
+        counter++;
+
+    }
+
+    // Return response to client
+    return res.status(200).send('HallInstance added');
 
 });
 
