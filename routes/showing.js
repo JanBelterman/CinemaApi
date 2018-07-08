@@ -2,6 +2,7 @@ const express = require('express');
 const auth = require('../middleware/authentication');
 const authManager = require('../middleware/authenticationManager');
 const database = require('../database');
+const { validate } = require('../models/showing');
 
 const router = express.Router();
 
@@ -14,6 +15,31 @@ router.get('/:movieID', auth, (req, res) => {
         if (result.length == 0) return res.status(404).send('No showings found for this movie');
 
         return res.status(200).send(result);
+
+    });
+
+});
+
+// Endpoint for creating a showing
+router.post('/', authManager, (req, res) => {
+
+    // Validating showing
+    const { error } = validate(req.body);
+    if (error) return res.status(412).send(error.details[0].message);
+
+    // Adding showing
+    database.query('INSERT INTO showing SET ?', req.body, (error, result) => {
+        if (error) console.log(error);
+
+        const showing = {
+            ID: result.insertId,
+            hallInstanceID: req.body.hallInstanceID,
+            movieID: req.body.movieID,
+            date: req.body.date
+        }
+
+        // Sending response
+        res.status(200).send(showing);
 
     });
 
