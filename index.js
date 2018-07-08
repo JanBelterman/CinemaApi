@@ -7,6 +7,7 @@ const hall = require('./routes/hall');
 const hallInstance = require('./routes/hallInstance');
 const seatInstance = require('./routes/seatInstance');
 const showing = require('./routes/showing');
+const ticket = require('./routes/ticket');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api/hall', hall);
 app.use('/api/hallInstance', hallInstance);
 app.use('/api/seatInstance', seatInstance);
 app.use('/api/showing', showing);
+app.use('/api/ticket', ticket);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
