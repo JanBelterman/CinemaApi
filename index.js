@@ -1,24 +1,24 @@
 const express = require('express');
-const user = require('./routes/user');
-const manager = require('./routes/manager');
-const genre = require('./routes/genre');
-const movie = require('./routes/movie');
-const hall = require('./routes/hall');
-const hallInstance = require('./routes/hallInstance');
-const seatInstance = require('./routes/seatInstance');
-const showing = require('./routes/showing');
+const userRoute = require('./routes/user');
+const managerRoute = require('./routes/manager');
+const genreRoute = require('./routes/genre');
+const movieRoute = require('./routes/movie');
+const hallRoute = require('./routes/hall');
+const hallInstanceRoute = require('./routes/hallInstance');
+const seatInstanceRoute = require('./routes/seatInstance');
+const showingRoute = require('./routes/showing');
 
 const app = express();
 
 app.use(express.json());
-app.use('/api/user', user);
-app.use('/api/manager', manager);
-app.use('/api/genre', genre);
-app.use('/api/movie', movie);
-app.use('/api/hall', hall);
-app.use('/api/hallInstance', hallInstance);
-app.use('/api/seatInstance', seatInstance);
-app.use('/api/showing', showing);
+app.use('/api/user', userRoute);
+app.use('/api/manager', managerRoute);
+app.use('/api/genre', genreRoute);
+app.use('/api/movie', movieRoute);
+app.use('/api/hall', hallRoute);
+app.use('/api/hallInstance', hallInstanceRoute);
+app.use('/api/seatInstance', seatInstanceRoute);
+app.use('/api/showing', showingRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
