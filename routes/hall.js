@@ -107,14 +107,10 @@ router.get('/', auth, async (req, res) => {
 
     let halls = await getHalls();
 
-    console.log('The halls from db: ', halls);
-
     let i = 0;
     while (i < halls.length) {
 
         halls[i].seatRows = await getSeatRows(halls[i]);
-
-        console.log('The seatRows of a hall: ', halls[i].seatRows);
 
         let j = 0;
         while (j < halls[i].seatRows.length) {
@@ -293,8 +289,6 @@ router.post('/', authManager, async (req, res) => {
     function insertSeats(seatRow) {
 
         return new Promise((resolve, reject) => {
-
-            console.log(seatRow);
 
             let i = 0;
             while (i < seatRow.seats.length) {
