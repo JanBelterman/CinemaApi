@@ -25,7 +25,7 @@ router.post('/login', (req, res) => {
         if (error) console.log(error);
 
         // Check if user exists
-        if (!result[0]) return res.status(401).send('Access denied. Not a valid user');
+        if (result.length == 0) return res.status(401).send('Access denied. Not a valid user');
 
         // Check if password is correct
         if (user.password !== result[0].password) return res.status(401).send('Access denied. Password is incorrect');
@@ -62,7 +62,7 @@ router.post('/register', (req, res) => {
         if (error) console.log(error);
 
         // Check if user exists
-        if (result[0]) return res.status(405).send('Cannot register: User already exists');
+        if (result.length > 0) return res.status(405).send('Cannot register: User already exists');
 
         // Create user
         database.query('INSERT INTO user SET?', user, (error, result) => {
