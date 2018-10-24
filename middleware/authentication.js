@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const database = require('../database');
 
 // Authentication function for both managers and user
-// Ment to be used for endpoints which both users and manager can access
+// Meant to be used for endpoints which both users and manager can access
 function auth(req, res, next) {
 
     // Get token from request header
@@ -22,7 +22,12 @@ function auth(req, res, next) {
             if (error) console.log(error);
 
             // If the query found a user, then advance
-            if (result.length >= 1) return next();
+            if (result.length >= 1) {
+                req.user = {
+                    ID: payload.ID,
+                };
+                return next();
+            }
 
             // If the query found no user than look for a manager
             database.query(`SELECT * FROM manager WHERE ID = ${payload.ID}`, (error, result) => {
@@ -32,6 +37,9 @@ function auth(req, res, next) {
                 if (result.length <= 0) return res.status(401).send('Access denied: incorrect credentials');
 
                 //If query found a manager, then advance
+                req.user = {
+                    ID: payload.ID,
+                };
                 next();
 
             });

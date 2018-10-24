@@ -4,7 +4,6 @@ function validate(ticket) {
 
     const schema = {
         showingID: joi.number().integer().required(),
-        userID: joi.number().integer().required(),
         seatInstanceID: joi.number().integer().required()
     };
 

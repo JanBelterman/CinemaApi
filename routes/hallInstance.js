@@ -23,7 +23,7 @@ router.get('/:ID', auth, async (req, res) => {
                 ID: result[0].ID,
                 hallID: result[0].hallID,
                 seatRowInstances: []
-                }
+                };
 
                 resolve(hallInstance);
 
@@ -54,7 +54,7 @@ router.get('/:ID', auth, async (req, res) => {
                         hallInstanceID: result[i].hallInstanceID,
                         seatRowID: result[i].seatRowID,
                         seatInstances: []
-                    }
+                    };
 
                     // Add that seat row instance to the list
                     seatRowInstances.push(seatRowInstance);
@@ -88,14 +88,14 @@ router.get('/:ID', auth, async (req, res) => {
 
                     // Get that seat
                     let seatInstance = {
-                    ID: result[j].ID,
-                    seatRowInstanceID: result[j].seatRowInstanceID,
-                    seatID: result[j].seatID,
-                    status: result[j].status
-                    }
+                    ID: result[i].ID,
+                    seatRowInstanceID: result[i].seatRowInstanceID,
+                    seatID: result[i].seatID,
+                    status: result[i].status
+                    };
 
                     // Add that seat instance to the list
-                    seats.push(seatInstance);
+                    seatInstances.push(seatInstance);
                     i++;
 
                 }
@@ -114,7 +114,7 @@ router.get('/:ID', auth, async (req, res) => {
         ID: req.params.ID,
         hallID: 0,
         seatRowInstances: []
-    }
+    };
 
     // Get hall instance
     hallInstance = await getHallInstance(hallInstance);
