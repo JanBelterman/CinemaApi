@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const database = require('../database');
 
 // Authentication function for both managers and user
-// Ment to be used for endpoints which both users and manager can access
+// Meant to be used for endpoints which both users and manager can access
 function auth(req, res, next) {
 
     // Get token from request header
