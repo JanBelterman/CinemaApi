@@ -11,27 +11,33 @@ router.post('/', auth, (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(412).send(error.details[0].message);
 
+    req.body.userID = req.user.ID;
+
+    console.log(req.body);
+
     // Add ticket
     database.query('INSERT INTO ticket SET ?', req.body, (error, result) => {
         if (error) console.log(error);
 
-        // Send reponses
         const ticket = {
             ID: result.insertId,
             showingID: req.body.showingID,
             userID: req.body.userID,
             seatInstanceID: req.body.seatInstanceID
-        }
-        return res.status(200).send(ticket);
+        };
 
+        database.query(`UPDATE seatinstance SET status = 2 WHERE ID = ${req.body.seatInstanceID}`, (error, result) => {
+            if (error) console.log(error);
+            return res.status(200).send(ticket);
+        });
     });
 
 });
 
-router.get('/:userID', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
 
     // Get tickets
-    let tickets = await getTickets(req.params.userID);
+    let tickets = await getTickets(req.user.ID);
 
     console.log('Tickets gotten: \n', JSON.stringify(tickets[0], null, 4));
 
