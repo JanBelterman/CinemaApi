@@ -22,7 +22,6 @@ router.post('/', auth, (req, res) => {
         const ticket = {
             ID: result.insertId,
             showingID: req.body.showingID,
-            userID: req.body.userID,
             seatInstanceID: req.body.seatInstanceID
         };
 
