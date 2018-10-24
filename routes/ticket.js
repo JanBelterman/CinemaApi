@@ -25,7 +25,7 @@ router.post('/', auth, (req, res) => {
             seatInstanceID: req.body.seatInstanceID
         };
 
-        database.query(`UPDATE seatinstance SET status = 2 WHERE ID = ${req.body.seatInstanceID}`, (error, result) => {
+        database.query(`UPDATE seatInstance SET status = 2 WHERE ID = ${req.body.seatInstanceID}`, (error, result) => {
             if (error) console.log(error);
             return res.status(200).send(ticket);
         });
