@@ -8,14 +8,29 @@ const router = express.Router();
 
 router.get('/', auth, (req, res) => {
 
-    database.query('SELECT * FROM movie', (error, result) => {
+    database.query('SELECT * FROM movie', async (error, result) => {
         if (error) console.log(error);
-
+        // include genres
+        if (req.query.include === 'genre') {
+            for (let i = 0; i < result.length; i++) {
+                result[i].genre = await getGenre(result[i].genreID);
+            }
+        }
         res.status(200).send(result);
 
     });
 
 });
+
+function getGenre(id) {
+    return new Promise((resolve, reject) => {
+        database.query(`SELECT * FROM genre WHERE ID = ${id}`, (error, result) => {
+            if (error) console.log(error);
+            if (result == null || result.length <= 0) return resolve("No genre");
+            resolve(result[0].title);
+        })
+    });
+}
 
 router.get('/:ID', auth, (req, res) => {
 
