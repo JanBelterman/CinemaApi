@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const database = require('../database');
+const database = require('../startup/database');
 
 // Authentication function for both managers and user
 // Meant to be used for endpoints which both users and manager can access

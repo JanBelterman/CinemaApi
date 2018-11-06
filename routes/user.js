@@ -1,7 +1,7 @@
 // Required modules
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const database = require('../database');
+const database = require('../startup/database');
 const { validate } = require('../models/login');
 
 // Get router from server
