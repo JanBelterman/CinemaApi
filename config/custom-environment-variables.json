@@ -1,5 +1,5 @@
 {
-    "jwtPrivateKey": "JWT_PRIVATE_KEY",
+    "jwtPrivateKey": "jwtPrivateKey",
     "databaseHost": "DATABASE_HOST",
     "databaseUser": "DATABASE_USER",
     "databasePassword": "DATABASE_PASSWORD",

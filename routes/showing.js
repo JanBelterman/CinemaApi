@@ -1,6 +1,6 @@
 const express = require('express');
 const auth = require('../middleware/auth');
-const authManager = require('../middleware/authenticationManager');
+const admin = require('../middleware/admin')
 const database = require('../startup/database');
 const { validate } = require('../models/showing');
 
@@ -16,7 +16,7 @@ router.get('/:movieID', auth, (req, res) => {
 });
 
 // Endpoint for creating a showing
-router.post('/', authManager, (req, res) => {
+router.post('/', [auth, admin], (req, res) => {
     // Validating showing
     const { error } = validate(req.body);
     if (error) return res.status(412).send(error.details[0].message);

@@ -1,6 +1,6 @@
 const express = require('express');
 const auth = require('../middleware/auth');
-const authManager = require('../middleware/authenticationManager');
+const admin = require('../middleware/admin')
 const database = require('../startup/database');
 
 const router = express.Router();
@@ -254,7 +254,7 @@ router.get('/:ID', auth, async (req, res) => {
 
 });
 
-router.post('/', authManager, async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
 
     function insertHall(hall) {
 
