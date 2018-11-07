@@ -2,7 +2,7 @@ const express = require('express')
 const auth = require('../middleware/auth')
 const database = require('../startup/database')
 const { validate } = require('../models/ticket')
-const ticketsRepo = require('../repos/tickets')
+const { ticketsRepo } = require('../repos/tickets')
 
 const router = express.Router()
 
@@ -17,7 +17,7 @@ router.post('/', auth, async (req, res) => {
         seatInstanceID: req.body.seatInstanceID
     }
     ticket.ID = await ticketsRepo.create(ticket)
-    await ticketsRepo.reserveSeat(seatInstanceID)
+    await ticketsRepo.reserveSeat(ticket.seatInstanceID)
 
     return res.status(200).send(ticket)
 })
