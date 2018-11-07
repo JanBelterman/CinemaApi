@@ -1,94 +1,40 @@
-const express = require('express');
-const auth = require('../middleware/authentication');
-const authManager = require('../middleware/authenticationManager');
-const database = require('../database');
-const { validate } = require('../models/genre');
+const express = require('express')
+const auth = require('../middleware/auth')
+const admin = require('../middleware/admin')
+const { validate } = require('../models/genre')
+const { genresRepo } = require('../repos/genre')
 
-const router = express.Router();
+const router = express.Router()
 
-// Endpoint to get all genres
-router.get('/', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
+    const genres = await genresRepo.getAll()
+    res.status(200).send(genres)
+})
 
-    // Query datbase for all genres
-    database.query('SELECT * FROM genre', (error, result) => {
-        if (error) console.log(error);
-
-        // Send response containing all the genres
-        res.status(200).send(result);
-
-    });
-
-});
-
-// Endpoint to post a new genre
-router.post('/', authManager, (req, res) => {
-
-    // Validate client input
-    const { error } = validate(req.body);
-    if (error) return res.status(412).send(error.details[0].message);
-
-    // Add genre to database
-    let genre = {
+router.post('/', [auth, admin], async (req, res) => {
+    const { error } = validate(req.body)
+    if (error) return res.status(400).send(error.details[0].message)
+    const genre = {
+        ID: await genresRepo.create(req.body),
         title: req.body.title
     }
-    const query = database.query('INSERT INTO genre SET ?', genre, (error, result) => {
-        if (error) console.log(error);
+    res.status(200).send(genre)
+})
 
-        // Get inserted genre
-        genre = {
-            ID: result.insertId,
-            title: genre.title
-        }
-
-        // Return response containing the created genre
-        res.status(200).send(genre);
-
-    });
-
-});
-
-// Endpoint to put a new genre
-router.put('/:ID', authManager, (req, res) => {
-
-    // Validate client input
-    const { error } = validate(req.body);
-    if (error) return res.status(412).send(error.details[0].message);
-
-    // Update genre in database
+router.put('/:ID', [auth, admin], async (req, res) => {
+    const { error } = validate(req.body)
+    if (error) return res.status(400).send(error.details[0].message)
     let genre = {
         ID: req.params.ID,
         title: req.body.title
     }
-    database.query(`UPDATE genre SET title = '${genre.title}' WHERE ID = ${genre.ID}`, (error, result) => {
-        if (error) console.log(error);
+    await genresRepo.update(genre)
+    res.status(200).send(genre)
+})
 
-        // Return response containing the updated genre
-        res.status(200).send(genre);
+router.delete('/:ID', [auth, admin], async (req, res) => {
+    await genresRepo.deleteById(req.params.ID)
+    res.status(200).send('Deleted')
+})
 
-    });
-
-});
-
-// Endpoint to delete a genre
-router.delete('/:ID', authManager, (req, res) => {
-
-    // Check if genre with given ID exists
-    database.query(`SELECT * FROM genre WHERE ID = ${req.params.ID}`, (error, result) => {
-        if (error) console.log(error);
-
-        if (!result[0]) return res.status(404).send(`Request terminated: no genre found with ID: ${req.params.ID}`);
-
-        // Delete genre
-        database.query(`DELETE FROM genre WHERE ID = ${req.params.ID}`, (error) => {
-            if (error) console.log(error);
-
-            // Return response containing the deleted genre
-            res.status(200).send(result[0]);
-
-        });
-
-    });
-
-});
-
-module.exports = router;
+module.exports = router

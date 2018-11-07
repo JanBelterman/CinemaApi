@@ -1,19 +1,17 @@
 const mysql = require('mysql');
+const config = require('config');
 
 let database = mysql.createConnection({
-    host: process.env.DATABASE_HOST || 'localhost',
-    user: process.env.DATABASE_USER || 'cinema_app_user',
-    password: process.env.DATABASE_PASSWORD || 'IyIdBqs6ACmZhjVW',
-    database: process.env.DATABASE_NAME || 'Cinema',
+    host: config.get('databaseHost'),
+    user: config.get('databaseUser'),
+    password: config.get('databasePassword'),
+    database: config.get('databaseName'),
     insecureAuth: true
 });
 
 database.connect((error) => {
-
     if (error) return console.log(error);
-
     console.log('Connected to database');
-
 });
 
 module.exports = database;

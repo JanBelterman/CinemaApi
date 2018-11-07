@@ -1,0 +1,7 @@
+{
+    "jwtPrivateKey": "jwtPrivateKey",
+    "databaseHost": "DATABASE_HOST",
+    "databaseUser": "DATABASE_USER",
+    "databasePassword": "DATABASE_PASSWORD",
+    "databaseName": "DATABASE_NAME"
+}

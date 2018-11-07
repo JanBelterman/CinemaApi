@@ -1,12 +1,12 @@
 const express = require('express');
-const auth = require('../middleware/authentication');
-const authManager = require('../middleware/authenticationManager');
-const database = require('../database');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin')
+const database = require('../startup/database');
 const { validate } = require('../models/movie');
 
 const router = express.Router();
 
-router.get('/', auth, (req, res) => {
+router.get('/', (req, res) => {
 
     database.query('SELECT * FROM movie', async (error, result) => {
         if (error) console.log(error);
@@ -45,7 +45,7 @@ router.get('/:ID', auth, (req, res) => {
 
 });
 
-router.post('/', authManager, (req, res) => {
+router.post('/', [auth, admin], (req, res) => {
 
     const { error } = validate(req.body);
     if (error) return res.status(412).send(error.details[0].message);
@@ -70,7 +70,7 @@ router.post('/', authManager, (req, res) => {
 
 });
 
-router.put('/:ID', authManager, (req, res) => {
+router.put('/:ID', [auth, admin], (req, res) => {
 
     const { error } = validate(req.body);
     if (error) return res.status(412).send(error.details[0].message);
