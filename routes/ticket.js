@@ -1,37 +1,26 @@
-const express = require('express');
-const auth = require('../middleware/auth');
-const database = require('../startup/database');
-const { validate } = require('../models/ticket');
+const express = require('express')
+const auth = require('../middleware/auth')
+const database = require('../startup/database')
+const { validate } = require('../models/ticket')
+const ticketRepo = require('../repos/tickets')
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/', auth, (req, res) => {
+router.post('/', auth, async (req, res) => {
+    const { error } = validate(req.body)
+    if (error) return res.status(400).send(error.details[0].message)
 
-    // Validate ticket
-    const { error } = validate(req.body);
-    if (error) return res.status(412).send(error.details[0].message);
+    // Create ticket & reserve seat
+    let ticket = {
+        showingID: req.body.showingID,
+        userID: req.user.ID,
+        seatInstanceID: req.body.seatInstanceID
+    }
+    ticket.ID = await ticketRepo.create(ticket)
+    await ticketRepo.reserveSeat(seatInstanceID)
 
-    req.body.userID = req.user.ID;
-
-    console.log(req.body);
-
-    // Add ticket
-    database.query('INSERT INTO ticket SET ?', req.body, (error, result) => {
-        if (error) console.log(error);
-
-        const ticket = {
-            ID: result.insertId,
-            showingID: req.body.showingID,
-            seatInstanceID: req.body.seatInstanceID
-        };
-
-        database.query(`UPDATE seatInstance SET status = 2 WHERE ID = ${req.body.seatInstanceID}`, (error, result) => {
-            if (error) console.log(error);
-            return res.status(200).send(ticket);
-        });
-    });
-
-});
+    return res.status(200).send(ticket)
+})
 
 router.get('/', auth, async (req, res) => {
 
