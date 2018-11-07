@@ -7,7 +7,7 @@ exports.getByUsername = function (username) {
             if (result) resolve(result[0])
         })
     })
-};
+}
 
 exports.create = function (user) {
     return new Promise((resolve) => {
